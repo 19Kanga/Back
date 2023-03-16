@@ -18,6 +18,7 @@ const roleRouter = require('./routes/role');
 
 
 const startServer = async () => {
+	
 	const prisma = new PrismaContext();
 	await prisma.start();
 
