@@ -21,6 +21,7 @@
   },
   "scripts": {
     "start": "nodemon ./src/index.js",
+    "build": "node build",
     "prisma:dev": "prisma migrate dev --name init"
   },
   "devDependencies": {
