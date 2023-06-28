@@ -32,25 +32,55 @@ enum typeRole {
   FMO
 }
 
-model User {
-  id          String           @id @default(uuid())
-  firstname   String
-  lastname    String
-  username    String           @unique
-  email       String           @unique
-  hash        String
-  address     String?
-  phone       String
-  role typeRole @default(USER)
-  // region      String?
-  // departement String?
-  created_at  DateTime         @default(now())
-  updated_at  DateTime         @updatedAt
-  // roleId      String
-  // role        Role             @relation(fields: [roleId], references: [id])
+enum statutControleur {
+  Repos
+  Mission
+  Admin
+}
 
-  // UserHasVehicule  UserHasVehicule[]
-  // UserHasEvenement UserHasEvenement[]
+enum statutRechercheV {
+  VALIDE
+  INVALIDE
+}
+
+enum statutPermis {
+  VALIDE
+  INVALIDE
+  EN_COUR
+}
+
+enum typeEntreprise {
+  ACTIVE
+  DESACTIVE
+}
+
+enum roleEntreprise {
+  CONTROLEUR
+  DOCUMENTATION
+}
+
+model User {
+  id            String           @id @default(uuid())
+  profile       String?
+  firstname     String
+  lastname      String
+  username      String           @unique
+  email         String           @unique
+  hash          String
+  address       String?
+  phone         String
+  role          typeRole         @default(USER)
+  entreprise    String?
+  detailEntr    String?
+  villeControle String?
+  lieuxControle String?
+  statut        statutControleur @default(Admin)
+  created_at    DateTime         @default(now())
+  updated_at    DateTime         @updatedAt
+  employesId    String
+  employes      Employes         @relation(fields: [employesId], references: [id])
+  ControlerV    ControlerV[]
+  ControlerP    ControlerP[]
 
   @@map("user")
 }
@@ -64,66 +94,109 @@ model User {
 //   @@map("role")
 // }
 
-// model PermisDeConduire {
-//   id              String   @id @default(uuid())
-//   nomProprietaire String
-//   prenom          String
-//   dateNais        DateTime
-//   villeNais       String?
-//   addresse        String?
-//   categorie       String
-//   dateDeliv       DateTime
-//   dateExp         DateTime
+model PermisDeConduire {
+  id         String       @id @default(uuid())
+  thumb      String?
+  numPermis  String?      @unique
+  nom        String
+  prenom     String
+  dateNais   DateTime
+  villeNais  String?
+  addresse   String?
+  categorie  String
+  dateDeliv  DateTime
+  dateExp    DateTime
+  ControlerP ControlerP[]
 
-
-
-//   @@map("permis")
-// }
+  @@map("permis")
+}
 
 model Voiture {
-  id              String        @id @default(uuid())
-  nochasis        String
-  marque          String
-  immatriculation String
-  typeVehicId     String
-  ctrlTechnique   TypeVehicule  @relation(fields: [typeVehicId], references: [id])
-  docuId          String
-  documentation   Documentation @relation(fields: [docuId], references: [id])
+  id            String        @id @default(uuid())
+  numSerie      String        @unique
+  nomV          String
+  typeVehicId   String
+  photo         String
+  ctrlTechnique TypeVehicule  @relation(fields: [typeVehicId], references: [id])
+  docuId        String
+  documentation Documentation @relation(fields: [docuId], references: [id])
+  ControlerV    ControlerV[]
 
   @@map("vehicule")
 }
 
+model ControlerV {
+  id            String           @id @default(uuid())
+  dateControle  DateTime?        @default(now())
+  numCarteG     statutRechercheV @default(INVALIDE)
+  numAssurance  statutRechercheV @default(INVALIDE)
+  numCtrlTech   statutRechercheV @default(INVALIDE)
+  userId        String
+  user          User             @relation(fields: [userId], references: [id])
+  idVehicule    String
+  documentation Voiture          @relation(fields: [idVehicule], references: [id])
+
+  @@map("controleurV")
+}
+
+model ControlerP {
+  id           String           @id @default(uuid())
+  dateControle DateTime?        @default(now())
+  numPerm      statutPermis     @default(VALIDE)
+  userId       String
+  user         User             @relation(fields: [userId], references: [id])
+  permisId     String
+  permis       PermisDeConduire @relation(fields: [permisId], references: [id])
+
+  @@map("controleurP")
+}
+
 model TypeVehicule {
-  id          String    @id @default(uuid())
+  id          String @id @default(uuid())
   type        String
   description String
 
-  Voiture     Voiture[]
+  Voiture Voiture[]
 
   @@map("typeVehicule")
 }
 
 model Documentation {
-  id              String            @id @default(uuid())
-  docId           String
-  carteGrise      CarteGrise        @relation(fields: [docId], references: [id])
-  assuranceId     String
-  assurance       Assurance         @relation(fields: [assuranceId], references: [id])
-  ctrlTechId      String
-  ctrlTechnique   CtrlTechnique     @relation(fields: [ctrlTechId], references: [id])
+  id            String        @id @default(uuid())
+  docId         String
+  carteGrise    CarteGrise    @relation(fields: [docId], references: [id])
+  assuranceId   String
+  assurance     Assurance     @relation(fields: [assuranceId], references: [id])
+  ctrlTechId    String
+  ctrlTechnique CtrlTechnique @relation(fields: [ctrlTechId], references: [id])
 
-  Voiture         Voiture[]
+  Voiture Voiture[]
   // UserHasVehicule UserHasVehicule[]
 
   @@map("documentation")
 }
 
 model CarteGrise {
-  id            String          @id @default(uuid())
-  dateDelivr    DateTime
-  dateExp       DateTime
-  nbrCheveaux   Int
-  hrsePower     String
+  id              String    @id @default(uuid())
+  immatriculation String    @unique
+  modele          String
+  marque          String
+  nbrCheveaux     Int
+  hrsePower       String?
+  nochasis        String?
+  nbrPlace        Int
+  couleur         String
+  typeCarburant   String?
+  dateDelivr      DateTime?
+  nbrCheveau      String?
+  horsePower      String?
+  nomP            String?
+  adresseP        String?
+  dateNais        DateTime?
+  tel             Int?
+  permis          String?
+  anneeC          String?
+  // dateExp     DateTime
 
   Documentation Documentation[]
 
@@ -131,60 +204,103 @@ model CarteGrise {
 }
 
 model Assurance {
-  id              String          @id @default(uuid())
-  from            String?
-  to              String
-  typeVeh         TypeV           @default(personnel)
+  id              String   @id @default(uuid())
+  // from            String?
+  // to              String
+  typeVeh         TypeV    @default(personnel)
+  typeCouverture  String
+  deductible      String?
+  franchise       String?
+  primeMensuel    String?
   registrationOn  DateTime
-  insuredName     String?
+  expDate         DateTime
+  // insuredName     String?
   nameOfAssurance String?
+  photoAss        String?
 
-  Documentation   Documentation[]
+  Documentation Documentation[]
 
   @@map("assurance")
 }
 
 model CtrlTechnique {
-  id              String          @id @default(uuid())
+  id              String   @id @default(uuid())
   dateCtrl        DateTime
-  resultat        String?
   prochaineVisite DateTime
+  resultat        String?
   nomEntreprise   String?
-  villeCtrl       String?
   photoCtrl       String?
 
-  Documentation   Documentation[]
+  Documentation Documentation[]
 
   @@map("ctrlTechnique")
 }
 
 model Evenement {
-  id               String             @id @default(uuid())
-  typeEven         TypeE              @default(denonciation)
-  lieux            String?
-  pieceJointe      String?
-  
+  id          String  @id @default(uuid())
+  typeEven    TypeE   @default(denonciation)
+  lieux       String?
+  pieceJointe String?
+
   // UserHasEvenement UserHasEvenement[]
 
   @@map("evenements")
 }
 
-// model UserHasVehicule {
-//   id            String        @id @default(uuid())
-//   userId        String
-//   user          User          @relation(fields: [userId], references: [id])
-//   docuId        String
-//   documentation Documentation @relation(fields: [docuId], references: [id])
+model Entreprise {
+  id            String         @id @default(uuid())
+  logo          String
+  nomEntreprise String
+  email         String
+  telephone     String?
+  adresse       String?
+  description   String?
+  roles         roleEntreprise @default(DOCUMENTATION)
+  etat          typeEntreprise @default(ACTIVE)
+  create_at     DateTime       @default(now())
+  Employes      Employes[]
 
-//   @@map("userhasVehicule")
-// }
+  @@map("entreprises")
+}
 
-// model UserHasEvenement {
-//   id        String    @id @default(uuid())
-//   userId    String
-//   user      User      @relation(fields: [userId], references: [id])
-//   evenId    String
-//   evenement Evenement @relation(fields: [evenId], references: [id])
+model Employes {
+  id            String           @id @default(uuid())
+  nom           String?
+  prenom        String?
+  dateNaiss     DateTime?
+  email         String?
+  telephone     String?
+  telephone1    String?
+  adresse       String?
+  villeControle String?
+  lieuxControle String?
+  religion      String?
+  matrimonial   String?
+  sexe          String?
+  nbr_enfant    String?
+  statut        statutControleur @default(Admin)
+  entrepriseId  String
+  entreprise    Entreprise       @relation(fields: [entrepriseId], references: [id])
+  User          User[]
 
-//   @@map("userEvenement")
-// }
+  @@map("employes")
+}
+
+model Villes {
+  id          String     @id @default(uuid())
+  nom         String
+  description String?
+  Quartier    Quartier[]
+
+  @@map("villes")
+}
+
+model Quartier {
+  id          String  @id @default(uuid())
+  nom         String
+  description String?
+  villeId     String
+  villes      Villes  @relation(fields: [villeId], references: [id])
+
+  @@map("quartier")
+}

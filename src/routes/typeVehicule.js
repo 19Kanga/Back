@@ -1,18 +1,19 @@
-const { Router } = require('express');
+const {Router} = require ('express');
 const {
-	deleteTypeVController,
-	getTypeVByIdController,
-	patchTypeVController,
-	postTypeVController,
-	getTypeVsController,
-} = require('../controllers/typeVehicule');
+  deleteTypeVController,
+  getTypeVByIdController,
+  patchTypeVController,
+  postTypeVController,
+  getTypeVsController,
+} = require ('../controllers/typeVehicule');
+const {checkAuth} = require ('../controllers/check-auth');
 
-const router = Router();
+const router = Router ();
 
-router.get('/', getTypeVsController);
-router.get('/:id', getTypeVByIdController);
-router.post('/', postTypeVController);
-router.patch('/', patchTypeVController);
-router.delete('/:id', deleteTypeVController);
+router.get ('/', checkAuth, getTypeVsController);
+router.get ('/:id', checkAuth, getTypeVByIdController);
+router.post ('/', checkAuth, postTypeVController);
+router.patch ('/', checkAuth, patchTypeVController);
+router.delete ('/:id', checkAuth, deleteTypeVController);
 
 module.exports = router;

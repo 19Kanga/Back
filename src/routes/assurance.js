@@ -1,18 +1,23 @@
-const { Router } = require('express');
+const {Router} = require ('express');
 const {
-	deleteAssuranceController,
-	getAssuranceByIdController,
-	patchAssuranceController,
-	postAssuranceController,
-	getAssurancesController,
-} = require('../controllers/assurance');
+  deleteAssuranceController,
+  getAssuranceByIdController,
+  patchAssuranceController,
+  postAssuranceController,
+  getAssurancesController,
+} = require ('../controllers/assurance');
+const {checkAuth} = require ('../controllers/check-auth');
+const {
+  getAssuranceByDocIdController,
+} = require ('../controllers/searchControler');
 
-const router = Router();
+const router = Router ();
 
-router.get('/', getAssurancesController);
-router.get('/:id', getAssuranceByIdController);
-router.post('/', postAssuranceController);
-router.patch('/', patchAssuranceController);
-router.delete('/:id', deleteAssuranceController);
+router.get ('/', checkAuth, getAssurancesController);
+router.get ('/:id', checkAuth, getAssuranceByIdController);
+router.get ('/doc/:id', checkAuth, getAssuranceByDocIdController);
+router.post ('/', checkAuth, postAssuranceController);
+router.patch ('/', checkAuth, patchAssuranceController);
+router.delete ('/:id', checkAuth, deleteAssuranceController);
 
 module.exports = router;

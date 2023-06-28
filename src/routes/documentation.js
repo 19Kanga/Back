@@ -1,18 +1,20 @@
-const { Router } = require('express');
+const {Router} = require ('express');
 const {
-	deleteDocumentationController,
-	getDocumentationByIdController,
-	patchDocumentationController,
-	postDocumentationController,
-	getDocumentationsController,
-} = require('../controllers/documentation');
+  deleteDocumentationController,
+  getDocumentationByIdController,
+  patchDocumentationController,
+  postDocumentationController,
+  getDocumentationsController,
+  getDocumentationByDocuController,
+} = require ('../controllers/documentation');
+const {checkAuth} = require ('../controllers/check-auth');
 
-const router = Router();
+const router = Router ();
 
-router.get('/', getDocumentationsController);
-router.get('/:id', getDocumentationByIdController);
-router.post('/', postDocumentationController);
-router.patch('/', patchDocumentationController);
-router.delete('/:id', deleteDocumentationController);
+router.get ('/', checkAuth, getDocumentationsController);
+router.get ('/:id', checkAuth, getDocumentationByDocuController);
+router.post ('/', checkAuth, postDocumentationController);
+router.patch ('/', checkAuth, patchDocumentationController);
+router.delete ('/:id', checkAuth, deleteDocumentationController);
 
 module.exports = router;

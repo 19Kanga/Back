@@ -1,18 +1,19 @@
-const { Router } = require('express');
+const {Router} = require ('express');
 const {
-	deleteCarteGController,
-	getCarteGByIdController,
-	patchCarteGController,
-	postCarteGController,
-	getCarteGsController,
-} = require('../controllers/carteGrise');
+  deleteCarteGController,
+  getCarteGByIdController,
+  patchCarteGController,
+  postCarteGController,
+  getCarteGsController,
+} = require ('../controllers/carteGrise');
+const {checkAuth} = require ('../controllers/check-auth');
 
-const router = Router();
+const router = Router ();
 
-router.get('/', getCarteGsController);
-router.get('/:id', getCarteGByIdController);
-router.post('/', postCarteGController);
-router.patch('/', patchCarteGController);
-router.delete('/:id', deleteCarteGController);
+router.get ('/', checkAuth, getCarteGsController);
+router.get ('/:id', checkAuth, getCarteGByIdController);
+router.post ('/', checkAuth, postCarteGController);
+router.patch ('/', checkAuth, patchCarteGController);
+router.delete ('/:id', checkAuth, deleteCarteGController);
 
 module.exports = router;

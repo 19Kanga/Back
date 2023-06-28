@@ -1,18 +1,19 @@
-const { Router } = require('express');
+const {Router} = require ('express');
 const {
-	deleteEvenementController,
-	getEvenementByIdController,
-	patchEvenementController,
-	postEvenementController,
-	getEvenementsController,
-} = require('../controllers/evenement');
+  deleteEvenementController,
+  getEvenementByIdController,
+  patchEvenementController,
+  postEvenementController,
+  getEvenementsController,
+} = require ('../controllers/evenement');
+const {checkAuth} = require ('../controllers/check-auth');
 
-const router = Router();
+const router = Router ();
 
-router.get('/', getEvenementsController);
-router.get('/:id', getEvenementByIdController);
-router.post('/', postEvenementController);
-router.patch('/', patchEvenementController);
-router.delete('/:id', deleteEvenementController);
+router.get ('/', checkAuth, getEvenementsController);
+router.get ('/:id', checkAuth, getEvenementByIdController);
+router.post ('/', checkAuth, postEvenementController);
+router.patch ('/', checkAuth, patchEvenementController);
+router.delete ('/:id', checkAuth, deleteEvenementController);
 
 module.exports = router;
